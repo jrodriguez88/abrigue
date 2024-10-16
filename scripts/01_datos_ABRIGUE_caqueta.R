@@ -21,16 +21,16 @@
 departamentos <- vect("data/spatial/Departamento.shp")
 municipios <- vect("data/spatial/Municipio, Distrito y Área no municipalizada.shp")
 
-choco_shp <- departamentos[departamentos$DeNombre == "Chocó"]
-choco_municipios_shp <- municipios[municipios$Depto == "Chocó"]
-abrigue_municipios_choco <- choco_municipios_shp[choco_municipios_shp$MpNombre %in% 
-                                                   c( "Bahía Solano", "Nuquí", "Juradó")]
+caqueta_shp <- departamentos[departamentos$DeNombre == "Caquetá"]
+caqueta_municipios_shp <- municipios[municipios$Depto == "Caquetá"]
+abrigue_municipios_caqueta <- caqueta_municipios_shp[caqueta_municipios_shp$MpNombre %in% 
+                                                   c("San José Del Fragua", "Montañita", "Belén De Los Andaquíes", "Albania", "El Paujil")]
 
-## Digital Elevation Model #### 
+## Digital Elevation Model ####
 # For TPS interpolation
 
- DEM <- geodata::elevation_30s(country = "COL", path=tempdir())
- choco_dem <- crop_raster(DEM, choco_shp)
+DEM <- geodata::elevation_30s(country = "COL", path=tempdir())
+caqueta_dem <- crop_raster(DEM, caqueta_shp)
 
 
 # Estaciones IDEAM #### 
@@ -39,28 +39,28 @@ abrigue_municipios_choco <- choco_municipios_shp[choco_municipios_shp$MpNombre %
 
 ## Precipitacion Mensual Historica
 
-files_prec_choco <- list.files("data/ideam/precipitacion/choco/", recursive = T, full.names = T, pattern = ".csv$")
+files_prec_caqueta <- list.files("data/ideam/precipitacion/caqueta/", recursive = T, full.names = T, pattern = ".csv$")
 
-ideam_prec_choco <- map(files_prec_choco, read_csv) %>% bind_rows() 
+ideam_prec_caqueta <- map(files_prec_caqueta, read_csv) %>% bind_rows() 
 
-estaciones_ideam_prec_choco <- ideam_prec_choco %>% 
+estaciones_ideam_prec_caqueta <- ideam_prec_caqueta %>% 
   dplyr::select(CodigoEstacion, NombreEstacion, Latitud, Longitud, Altitud) %>%
   distinct() %>%
   mutate(NombreEstacion = str_remove(NombreEstacion, "\\s*\\[.*?\\]") %>% str_to_title) %>%
-  st_as_sf(coords = c("Longitud", "Latitud"), crs = 4326)
+  st_as_sf(coords = c("Longitud", "Latitud"), crs = 9377)
 
 
 ## Temperatura Mensual Historica
 
-files_temp_choco <- list.files("data/ideam/temperatura/choco/", recursive = T, full.names = T, pattern = ".csv$")
+files_temp_caqueta <- list.files("data/ideam/temperatura/caqueta/", recursive = T, full.names = T, pattern = ".csv$")
 
-ideam_temp_choco <- map(files_temp_choco, read_csv) %>% bind_rows() 
+ideam_temp_caqueta <- map(files_temp_caqueta, read_csv) %>% bind_rows() 
 
-estaciones_ideam_temp_choco <- ideam_temp_choco %>% 
+estaciones_ideam_temp_caqueta <- ideam_temp_caqueta %>% 
   dplyr::select(CodigoEstacion, NombreEstacion, Latitud, Longitud, Altitud) %>%
   distinct() %>%
   mutate(NombreEstacion = str_remove(NombreEstacion, "\\s*\\[.*?\\]") %>% str_to_title) %>%
-  st_as_sf(coords = c("Longitud", "Latitud"), crs = 4326)
+  st_as_sf(coords = c("Longitud", "Latitud"), crs = 9377)
 
 
 ## Mapas estaciones ####
@@ -70,55 +70,55 @@ estaciones_ideam_temp_choco <- ideam_temp_choco %>%
 # crear_mapa(choco_dem, choco_shp, abrigue_municipios_choco, estaciones_ideam_temp_choco, "Chocó - Estaciones IDEAM - Temperatura", estacion_col = "red")
 # crear_mapa(caqueta_dem, caqueta_shp, abrigue_municipios_caqueta, estaciones_ideam_temp_caqueta, "Caquetá - Estaciones IDEAM - Temperatura", estacion_col = "red")
 
-plet(abrigue_municipios_choco, "MpNombre", split=TRUE, alpha=.2) |> 
-  points(vect(estaciones_ideam_prec_choco), col="blue", cex=2, popup=TRUE) |> 
-  points(vect(estaciones_ideam_temp_choco), col="red", cex=2, popup=TRUE)
+plet(abrigue_municipios_caqueta, "MpNombre", split=TRUE, alpha=.2) |> 
+  points(vect(estaciones_ideam_prec_caqueta), col="blue", cex=2, popup=TRUE) |> 
+  points(vect(estaciones_ideam_temp_caqueta), col="red", cex=2, popup=TRUE)
 
 
 ## CHIRPS DATA ####
 # Fuente: https://chc.ucsb.edu/data/chirps
 
-chirps_files_choco <- list.files("data/chirps_raster/choco/", full.names = T)
+chirps_files_caqueta <- list.files("data/chirps_raster/caqueta/", full.names = T)
 
 
-# Choco 
+# Caqueta
 
-tb_chirps_choco <- chirps_files_choco %>%
+tb_chirps_caqueta <- chirps_files_caqueta %>%
   enframe(value = "file", name = NULL) %>%
   mutate(basename_file = basename(file),
          basename_file = str_remove(basename_file, "chirps-v2.0."),
          basename_file = str_remove(basename_file, ".tif")) %>%
   separate(basename_file, into = c("year", "month"), convert = T)
 
-chirps_raster_mensual_choco  <- chirps_files_choco %>%
+chirps_raster_mensual_caqueta  <- chirps_files_caqueta %>%
   rast() 
 
-chirps_raster_anuales_choco <- tb_chirps_choco %>% nest(data = -year) %>%
+chirps_raster_anuales_caqueta <- tb_chirps_caqueta %>% nest(data = -year) %>%
   mutate(raster_anual = map(data, ~ app(rast(.x$file), sum)))
 
 ## Calcula linea base 
-chirps_choco_linea_base_1995_2014 <- chirps_raster_anuales_choco %>%
+chirps_caqueta_linea_base_1995_2014 <- chirps_raster_anuales_caqueta %>%
   filter(year >1994, year<2015) %>%
   pull(raster_anual) %>% rast() %>% 
   app(median)
 
 
-chirps_choco_linea_base_1995_2014[chirps_choco_linea_base_1995_2014 < 0] <- NA
-plot(chirps_choco_linea_base_1995_2014, main = "CHIPRS-Chocó, Lluvia anual promedio (1995-2014)")
+chirps_caqueta_linea_base_1995_2014[chirps_caqueta_linea_base_1995_2014 < 0] <- NA
+plot(chirps_caqueta_linea_base_1995_2014)
 
 
 ## Extract CHIRPS data by points ####
-chirps_data_choco_ws <- extract_from_chirps(chirps_raster_mensual_choco, estaciones_ideam_prec_choco)
+chirps_data_caqueta_ws <- extract_from_chirps(chirps_raster_mensual_caqueta, estaciones_ideam_prec_caqueta)
 
 
 ## ERA5 DATA ####
 
-era5_files_choco <- list.files("data/era5_raster/era5/choco/", full.names = T)
+era5_files_caqueta <- list.files("data/era5_raster/era5/caqueta/", full.names = T)
 
 
-# Choco 
+# Caqueta
 
-tb_era_choco <- era5_files_choco %>%
+tb_era_caqueta <- era5_files_caqueta %>%
   enframe(value = "file", name = NULL) %>%
   mutate(basename_file = basename(file),
          basename_file = str_remove(basename_file, "emperature_2m_"),
@@ -128,40 +128,38 @@ tb_era_choco <- era5_files_choco %>%
   separate(basename_file, into = c("var", "date"), sep = "_mean_" , convert = T) %>% 
   separate(date, into = c("year", "month"),sep = "_", convert = T)
 
-era5_tmax_mensual_choco  <- tb_era_choco %>% filter(var == "tmax") %>%
+era5_tmax_mensual_caqueta  <- tb_era_caqueta %>% filter(var == "tmax") %>%
   mutate(raster_tmax = map(file, rast)) 
 
-era5_tmin_mensual_choco  <- tb_era_choco %>% filter(var == "tmin") %>%
+era5_tmin_mensual_caqueta  <- tb_era_caqueta %>% filter(var == "tmin") %>%
   mutate(raster_tmin = map(file, rast)) 
 
-era5_tmean_mensual_choco <- left_join(era5_tmax_mensual_choco, 
-                                      era5_tmin_mensual_choco, 
+era5_tmean_mensual_caqueta <- left_join(era5_tmax_mensual_caqueta, 
+                                      era5_tmin_mensual_caqueta, 
                                       by = c("year", "month")) %>%
   mutate(raster_mean = map2(raster_tmax, raster_tmin, ~(.x + .y)/2))
 
 
-era5_tmean_anuales_choco <- era5_tmean_mensual_choco %>% 
+era5_tmean_anuales_caqueta <- era5_tmean_mensual_caqueta %>% 
   select(year, month, raster_mean) %>%
   nest(data = -year) %>%
   mutate(raster_anual = map(data, ~ app(rast(.x$raster_mean), mean)))
 
 ## Calcula linea base 
-era5_choco_linea_base_1995_2014 <- era5_tmean_anuales_choco %>%
+era5_caqueta_linea_base_1995_2014 <- era5_tmean_anuales_caqueta %>%
   filter(year >1994, year<2015) %>%
   pull(raster_anual) %>% rast() %>% 
   app(median)
 
-plot(era5_choco_linea_base_1995_2014 - 273.15, main = "ERA5-Chocó, Temperatura media promedio (1995-2014)")
-
+plot(era5_caqueta_linea_base_1995_2014 - 273.15, main = "ERA5-Caquetá, Temperatura media promedio (1995-2014)")
 
 
 ## Extract ERA5 data by locations ####
 ## Tmin
-era5_tmin_data_choco_ws<- extract_from_era(tb_era_choco %>% 
-                                             filter(var == "tmin") %>% 
-                                             pull(file), estaciones_ideam_temp_choco)
+era5_tmin_data_caqueta_ws <- extract_from_era(rast(era5_tmin_mensual_caqueta$raster_tmin), estaciones_ideam_temp_caqueta)
+
 
 ## Tmax
-era5_tmax_data_choco_ws <- extract_from_era(tb_era_choco %>% 
-                                              filter(var == "tmax") %>% 
-                                              pull(file), estaciones_ideam_temp_choco)
+era5_tmax_data_caqueta_ws <- extract_from_era(tb_era_caqueta %>% filter(var == "tmax") %>% 
+                                                pull(file), estaciones_ideam_temp_caqueta)
+
