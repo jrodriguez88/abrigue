@@ -29,8 +29,8 @@ abrigue_municipios_choco <- choco_municipios_shp[choco_municipios_shp$MpNombre %
 ## Digital Elevation Model #### 
 # For TPS interpolation
 
- DEM <- geodata::elevation_30s(country = "COL", path=tempdir())
- choco_dem <- crop_raster(DEM, choco_shp)
+DEM <- geodata::elevation_30s(country = "COL", path=tempdir())
+choco_dem <- crop_raster(DEM, choco_shp)
 
 
 # Estaciones IDEAM #### 

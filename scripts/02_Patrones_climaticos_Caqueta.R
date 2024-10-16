@@ -115,52 +115,52 @@ finalPlot
 
 
 
-library(gridBase)
-library(grid)
+# library(gridBase)
+# library(grid)
+# # 
+# # par(mfrow=c(1, 4))
+# # # Graficar el primer raster: Elevación
+# # plot(annual_mean_temp - 273.15, main = "Temperatura (oC)", col = map.pal("plasma")) 
+# # 
+# # # Graficar el segundo raster: Precipitación anual media
+# # plot(annual_mean_ppt, main = "Precipitación Anual Media (mm)", col = rev(map.pal("viridis")))
+# # 
+# # ## the last one is the current plot
+# # plot.new()              ## create new plot list 
+# # vps <- baseViewports()
+# # pushViewport(vps$figure) ##   I am in the space of the autocorrelation plot
+# # vp1 <-plotViewport(c(1.8,1,0,1)) ## create new vp with margins, you play with this values 
+# # print(finalPlot, vp = vp1) 
+# # 
+# # # Graficar el tercer raster: K-means Clustering
+# # plot(cluster_raster, main = "K-means Clustering", col = rainbow(5)) # Ajusta la paleta según el número de clusters
+# # 
+# # # Restablecer la configuración a la predeterminada
+# # par(mfrow = c(1, 1))
 # 
-# par(mfrow=c(1, 4))
-# # Graficar el primer raster: Elevación
-# plot(annual_mean_temp - 273.15, main = "Temperatura (oC)", col = map.pal("plasma")) 
+# mat <- matrix(c(1, 2,  # First, second
+#                      3, 3), # and third plot
+#                    nrow = 2,
+#                    ncol = 2,
+#                    byrow = TRUE)
+# 
+# 
+# layout(mat = mat)
 # 
 # # Graficar el segundo raster: Precipitación anual media
 # plot(annual_mean_ppt, main = "Precipitación Anual Media (mm)", col = rev(map.pal("viridis")))
 # 
-# ## the last one is the current plot
-# plot.new()              ## create new plot list 
+# # Graficar el primer raster: Temperatura
+# plot(annual_mean_temp - 273.15, main = "Temperatura (oC)", col = map.pal("plasma"))
+# 
+# # ## the last one is the current plot
+# plot.new()              ## create new plot list
 # vps <- baseViewports()
 # pushViewport(vps$figure) ##   I am in the space of the autocorrelation plot
-# vp1 <-plotViewport(c(1.8,1,0,1)) ## create new vp with margins, you play with this values 
-# print(finalPlot, vp = vp1) 
-# 
-# # Graficar el tercer raster: K-means Clustering
-# plot(cluster_raster, main = "K-means Clustering", col = rainbow(5)) # Ajusta la paleta según el número de clusters
-# 
-# # Restablecer la configuración a la predeterminada
-# par(mfrow = c(1, 1))
-
-mat <- matrix(c(1, 2,  # First, second
-                     3, 3), # and third plot
-                   nrow = 2,
-                   ncol = 2,
-                   byrow = TRUE)
-
-
-layout(mat = mat)
-
-# Graficar el segundo raster: Precipitación anual media
-plot(annual_mean_ppt, main = "Precipitación Anual Media (mm)", col = rev(map.pal("viridis")))
-
-# Graficar el primer raster: Temperatura
-plot(annual_mean_temp - 273.15, main = "Temperatura (oC)", col = map.pal("plasma"))
-
-# ## the last one is the current plot
-plot.new()              ## create new plot list
-vps <- baseViewports()
-pushViewport(vps$figure) ##   I am in the space of the autocorrelation plot
-vp1 <-plotViewport(c(1.8,1,0,1)) ## create new vp with margins, you play with this values
-print(finalPlot, vp = vp1)
+# vp1 <-plotViewport(c(1.8,1,0,1)) ## create new vp with margins, you play with this values
+# print(finalPlot, vp = vp1)
 
 
 
-plot(era5_linea_base_1995_2014_caqueta)
+# plot(era5_linea_base_1995_2014_caqueta)
   
