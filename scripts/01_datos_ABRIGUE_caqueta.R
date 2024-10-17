@@ -47,7 +47,7 @@ estaciones_ideam_prec_caqueta <- ideam_prec_caqueta %>%
   dplyr::select(CodigoEstacion, NombreEstacion, Latitud, Longitud, Altitud) %>%
   distinct() %>%
   mutate(NombreEstacion = str_remove(NombreEstacion, "\\s*\\[.*?\\]") %>% str_to_title) %>%
-  st_as_sf(coords = c("Longitud", "Latitud"), crs = 9377)
+  st_as_sf(coords = c("Longitud", "Latitud"), crs = 4326)
 
 
 ## Temperatura Mensual Historica
@@ -60,7 +60,7 @@ estaciones_ideam_temp_caqueta <- ideam_temp_caqueta %>%
   dplyr::select(CodigoEstacion, NombreEstacion, Latitud, Longitud, Altitud) %>%
   distinct() %>%
   mutate(NombreEstacion = str_remove(NombreEstacion, "\\s*\\[.*?\\]") %>% str_to_title) %>%
-  st_as_sf(coords = c("Longitud", "Latitud"), crs = 9377)
+  st_as_sf(coords = c("Longitud", "Latitud"), crs = 4326)
 
 
 ## Mapas estaciones ####

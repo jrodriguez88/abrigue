@@ -1,5 +1,5 @@
 # Directorio de los archivos raster
-path <- "data/chirps_raster/choco_raster/"
+path <- "data/chirps_raster/choco/"
 files <- list.files(path, full.names = TRUE)
 
 # Extraer el año de los nombres de archivo
@@ -34,10 +34,10 @@ period_files <- annual_files[grepl("199[5-9]|200[0-9]|201[0-4]", basename(annual
 
 
 # Cargar los raster del periodo
-period_rasters <- rast(period_files)
+period_rasters <- rast(annual_precipitation)
 
 # Calcular el raster promedio del periodo
-mean_raster <- app(period_rasters, median)
+mean_raster <- app(a, median)
 
 # Guardar el raster promedio en un archivo
 writeRaster(mean_raster, 
@@ -45,11 +45,14 @@ writeRaster(mean_raster,
             overwrite = TRUE)
 
 precipitacion_anual_media <- rast("data/chirps_raster/mean_precipitation_choco_1995_2014.tif")
-precipitacion_anual_media[precipitacion_anual_media < 0] <- NA
+period_rasters[period_rasters < 0] <- NA
+
+mean_raster <- app(period_rasters, median)
+
+precipitacion_anual_media <- mean_raster
 
 
-
-plot(precipitacion_anual_media, main = "precipictacion anual")
+plot(mean_raster, main = "precipictacion anual")
 
 
 # Resample the annual mean temperature raster to a finer resolution (approximately 1 km)

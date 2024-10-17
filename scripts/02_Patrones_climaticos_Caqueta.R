@@ -11,9 +11,11 @@
 chirps_caqueta_linea_base_1995_2014
 era5_caqueta_linea_base_1995_2014
 
+dim_var <- 3  #Dimensions or quantiles per variable
+new_res <- 0.025  # Set the new resolution
+
 
 # Resample the annual mean temperature raster to a finer resolution (approximately 1 km)
-new_res <- 0.025  # Set the new resolution
 new_raster <- rast(ext(era5_caqueta_linea_base_1995_2014), resolution = new_res, crs = crs(era5_caqueta_linea_base_1995_2014))
 annual_mean_temp <- resample(x = era5_caqueta_linea_base_1995_2014, y = new_raster, method="bilinear")
 caqueta_temp <- terra::crop(annual_mean_temp - 273.15, y = project(caqueta_shp, annual_mean_temp), mask = TRUE)
@@ -45,14 +47,14 @@ temp_ppt_df <- temp_ppt |>
 data <- bi_class(temp_ppt_df,
                  x = temp, 
                  y = ppt, 
-                 style = "quantile", dim = 3)
+                 style = "quantile", dim = dim_var)
 
 # Plot the distribution of the bivariate classes to visualize the frequency of each class
-data |> 
-  count(bi_class) |> 
-  ggplot(aes(x = bi_class, y = n)) +
-  geom_col() +  # Create a bar plot to show the count of each bivariate class
-  labs(title = "Distribution of Bivariate Classes", x = "Bivariate Class", y = "Frequency")
+# data |> 
+#   count(bi_class) |> 
+#   ggplot(aes(x = bi_class, y = n)) +
+#   geom_col() +  # Create a bar plot to show the count of each bivariate class
+#   labs(title = "Distribution of Bivariate Classes", x = "Bivariate Class", y = "Frequency")
 
 
 
@@ -67,7 +69,7 @@ map <- ggplot() +
   # Plot the bivariate raster data with appropriate fill color based on bivariate classes
   geom_raster(data = data, mapping = aes(x = x, y = y, fill = bi_class), color = NA, linewidth = 0.1, show.legend = FALSE) +
   # Apply the bivariate color scale using the selected palette and dimensions
-  bi_scale_fill(pal = pallet, dim = 3, flip_axes = FALSE, rotate_pal = FALSE) +
+  bi_scale_fill(pal = pallet, dim = dim_var, flip_axes = FALSE, rotate_pal = FALSE) +
   # Overlay the first administrative level boundaries 
   geom_sf(data = st_as_sf(project(abrigue_municipios_caqueta, caqueta_ppt)), fill = NA, color = "black", linewidth = 0.10) +
   # Overlay the country-level boundary 
@@ -86,7 +88,7 @@ map <- ggplot() +
 # sample 4x4 legend with breaks
 ## create vector of breaks
 break_vals <- bi_class_breaks(data, style = "quantile",
-                              x = temp, y = ppt, dim = 3, dig_lab = c(x = 3, y = 3),
+                              x = temp, y = ppt, dim = dim_var, dig_lab = c(x = 3, y = 3),
                               split = TRUE)
 
 
@@ -94,7 +96,7 @@ break_vals <- bi_class_breaks(data, style = "quantile",
 legend <- bi_legend(pal = pallet,   
                     flip_axes = FALSE,
                     rotate_pal = FALSE,
-                    dim = 3,
+                    dim = dim_var,
                     xlab = "Temperatura (oC)",
                     ylab = "Precipitacion (mm)",
                     breaks = break_vals,
