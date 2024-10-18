@@ -118,3 +118,65 @@ extract_from_era <- function(raster, puntos_estaciones){
 }
 
 
+##Graficos clima 
+
+time_line_estaciones <- function(ideam_data, estaciones_objetivo, ini_date, end_date){
+  
+  ideam_data %>%
+    mutate(NombreEstacion = str_remove(NombreEstacion, "\\s*\\[.*?\\]") %>% str_to_title) %>% 
+    filter(NombreEstacion %in% estaciones_objetivo) %>%
+    select(Etiqueta, NombreEstacion, FechaInstalacion, FechaSuspension) %>% 
+    distinct() %>%
+    mutate(FechaInstalacion = as_date(dmy_hm(FechaInstalacion)),
+           FechaInstalacion = as.Date(ifelse(FechaInstalacion < ymd(ini_date),  ymd(ini_date), FechaInstalacion)),
+           FechaSuspension = as_date(dmy_hm(FechaSuspension)),
+           FechaSuspension = as.Date(ifelse(is.na(FechaSuspension),  ymd(end_date), FechaSuspension))) %>%
+    #  filter(FechaInstalacion > ymd("1981-01-01")) %>%
+    # Crear el gráfico de segmentos
+    ggplot(aes(x = FechaInstalacion, xend = FechaSuspension, 
+               y = NombreEstacion, yend = NombreEstacion)) +
+    geom_segment(aes(color = Etiqueta), size = 1.2, position = position_dodge(width = 0.1)) +  # Segmentos
+    geom_vline(xintercept = ymd("1981-01-01")) +
+    # scale_x_date(limits = c(ymd("1960-01-01"), ymd("2024-08-30"))) + 
+    labs(title = "Linea de tiempo - Registro", x = "Fecha", y = "Nombre de la Estación") +
+    theme_minimal() 
+  
+  
+}
+
+lineplot_mensual_clima <- function(data_to_plot, estaciones_objetivo, var = "Precipitacion (mm)"){
+  
+  data_to_plot %>%
+    drop_na() %>% 
+    filter(NombreEstacion %in% estaciones_objetivo_choco) %>%
+    ggplot(aes(date, value, color = Fuente)) +
+    geom_line() +
+    facet_wrap(~ NombreEstacion, scales = "free") +
+    theme_bw(14) +
+    theme(
+      panel.grid.minor = element_blank(),
+      strip.background=element_rect(fill="white", size=1.5, linetype="solid"),
+      strip.text = element_text(face = "bold"),
+      legend.position = "bottom") +
+    labs(x = NULL, y = var, fill = "Fuente: ") 
+}
+
+
+boxplot_mensual_clima <- function(data_to_plot, estaciones_objetivo, var = "Precipitacion (mm)"){
+  
+  data_to_plot %>%
+    drop_na() %>% 
+    filter(NombreEstacion %in% estaciones_objetivo) %>%
+    ggplot(aes(month, value, fill = Fuente, group = interaction(month, Fuente))) +
+    geom_boxplot(alpha = 0.7) +
+    facet_wrap(~ NombreEstacion, scales = "free") +
+    scale_x_continuous(labels = function(x) month.abb[x], breaks = 1:12) +
+    theme_bw(14) +
+    theme(
+      panel.grid.minor = element_blank(),
+      strip.background=element_rect(fill="white", size=1.5, linetype="solid"),
+      strip.text = element_text(face = "bold"),
+      legend.position = "bottom") +
+    labs(x = NULL, y = var, fill = "Fuente: ") 
+}
+

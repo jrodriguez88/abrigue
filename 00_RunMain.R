@@ -24,4 +24,4 @@ source("scripts/01_datos_ABRIGUE_choco.R")
 
 # Patrones Climaticos Choco
 source("scripts/02_Patrones_climaticos_Choco.R")
-finalPlot
+mapa_bivar_choco
