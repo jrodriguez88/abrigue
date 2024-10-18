@@ -104,12 +104,12 @@ legend <- bi_legend(pal = pallet,
 
 
 # Combine the map and legend using cowplot
-finalPlot <- ggdraw() +
+mapa_bivar_caqueta <- ggdraw() +
   draw_plot(map, 0, 0, 1, 1) +  # Draw the main map plot
   draw_plot(legend, 0.6, 0.6, 0.28, 0.28)   # Draw the legend in the specified position
 
 # Display the final map with legend
-finalPlot
+mapa_bivar_caqueta
 
 
 

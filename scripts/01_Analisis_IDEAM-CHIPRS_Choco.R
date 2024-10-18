@@ -17,6 +17,7 @@ ini_date <- "1981-01-01"
 end_date <- "2024-08-01"
 
 
+# Subset
 ideam_prec <- ideam_prec_choco %>% 
   select(CodigoEstacion, NombreEstacion, date = Fecha, ideam = Valor) %>%   
   mutate(date = as.Date(date)) %>%

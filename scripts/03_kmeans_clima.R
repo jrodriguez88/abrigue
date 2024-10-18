@@ -4,7 +4,7 @@
 ## Octubre 2024
 
 # Directorio de los archivos raster
-plot(chirps_choco_linea_base_1995_2014, main = "precipictacion anual")
+plot(chirps_choco_linea_base_1995_2014, main = "Precipitacion anual - referencia")
 
 plot(temp_ppt)
 
@@ -40,7 +40,7 @@ precipitacion_anual_media <- chirps_choco_linea_base_1995_2014
 # r_stack <- temp_ppt
 
 # Convertir el raster stack a una matriz donde cada fila es un píxel y cada columna es una capa
-r_matrix <- as.matrix(precipitacion_anual_media)
+r_matrix <- as.matrix(temp_ppt)
 
 # Eliminar filas con valores NA (si hay)
 #r_matrix <- na.omit(r_matrix)
@@ -54,7 +54,7 @@ k <- 4 # Número de clusters, ajusta según lo que necesites
 kmeans_result <- kmeans(r_matrix[valid_indices, ], centers = k, nstart = 25)
 
 # Crear un nuevo raster con la misma estructura que el original
-cluster_raster <- rast(precipitacion_anual_media)
+cluster_raster <- rast(temp_ppt)
 
 # Inicializar el raster con NA
 values(cluster_raster) <- NA
@@ -63,7 +63,7 @@ values(cluster_raster) <- NA
 values(cluster_raster)[valid_indices] <- kmeans_result$cluster
 
 # Visualizar el resultado
-plot(cluster_raster, main = "K-means Clustering")
+plot(cluster_raster[[1]], main = "K-means Clustering")
 
 
 
@@ -80,7 +80,7 @@ plot(precipitacion_anual_media, main = "Precipitación Anual Media (mm)", col = 
 plot(annual_mean_temp - 273.15, main = "Temperatura (oC)", col = map.pal("plasma")) 
 
 # Graficar el tercer raster: K-means Clustering
-plot(cluster_raster, main = "K-means Clustering", col = rainbow(5)) # Ajusta la paleta según el número de clusters
+plot(cluster_raster[[1]], main = "K-means Clustering", col = rainbow(5)) # Ajusta la paleta según el número de clusters
 
 # Restablecer la configuración a la predeterminada
 par(mfrow = c(1, 1))
