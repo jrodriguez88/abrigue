@@ -70,9 +70,9 @@ estaciones_ideam_temp_choco <- ideam_temp_choco %>%
 # crear_mapa(choco_dem, choco_shp, abrigue_municipios_choco, estaciones_ideam_temp_choco, "Chocó - Estaciones IDEAM - Temperatura", estacion_col = "red")
 # crear_mapa(caqueta_dem, caqueta_shp, abrigue_municipios_caqueta, estaciones_ideam_temp_caqueta, "Caquetá - Estaciones IDEAM - Temperatura", estacion_col = "red")
 
-plet(abrigue_municipios_choco, "MpNombre", split=TRUE, alpha=.2) |> 
-  points(vect(estaciones_ideam_prec_choco), col="blue", cex=2, popup=TRUE) |> 
-  points(vect(estaciones_ideam_temp_choco), col="red", cex=2, popup=TRUE)
+# plet(abrigue_municipios_choco, "MpNombre", split=TRUE, alpha=.2) |> 
+#   points(vect(estaciones_ideam_prec_choco), col="blue", cex=2, popup=TRUE) |> 
+#   points(vect(estaciones_ideam_temp_choco), col="red", cex=2, popup=TRUE)
 
 
 ## CHIRPS DATA ####

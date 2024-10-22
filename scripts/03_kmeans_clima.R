@@ -16,7 +16,7 @@ precipitacion_anual_media <- chirps_choco_linea_base_1995_2014
 # new_raster <- rast(ext(precipitacion_anual_media), resolution = new_res, crs = crs(precipitacion_anual_media))
 # annual_mean_rain <- resample(x = precipitacion_anual_media, y = new_raster, method="bilinear")
 # 
-# # Plot the cropped annual mean temperature for the United Kingdom
+
 # plot(annual_mean_rain)
 
 # 

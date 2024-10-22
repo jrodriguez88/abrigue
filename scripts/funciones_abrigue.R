@@ -148,7 +148,7 @@ lineplot_mensual_clima <- function(data_to_plot, estaciones_objetivo, var = "Pre
   
   data_to_plot %>%
     drop_na() %>% 
-    filter(NombreEstacion %in% estaciones_objetivo_choco) %>%
+    filter(NombreEstacion %in% estaciones_objetivo) %>%
     ggplot(aes(date, value, color = Fuente)) +
     geom_line() +
     facet_wrap(~ NombreEstacion, scales = "free") +
