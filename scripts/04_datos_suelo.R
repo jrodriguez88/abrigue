@@ -19,7 +19,11 @@ ext_choco <- ext(limites_choco)
 
 
 ## Prueba de descarga Geodata
-test_SOC <- soil_world(var="soc", depth=5, path=tempdir())
+depths <- c(5, 15, 30, 60, 100, 200)
+depths <- c(100, 200)
+
+map(depths, ~soil_world(var="phh2o", depth=depths, path="data/soilgrids/"))
+test_SOC <- soil_world(var="soc", depth=5, path="data/soilgrids/")
 plot(test_SOC)
 
 soc5_choco <- crop(test_SOC, limites_choco, mask = T)
@@ -27,3 +31,7 @@ soc5_caqueta <- crop(test_SOC, limites_caqueta, mask = T)
 
 plot(soc5_choco)
 plot(soc5_caqueta)
+
+
+ttt <- rast("data/soilgrids/soil_world/soc_30-60cm_mean_30s.tif")
+plot(ttt)

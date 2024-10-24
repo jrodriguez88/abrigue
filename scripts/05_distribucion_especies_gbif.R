@@ -1,4 +1,4 @@
-# Descarga datos de Modelacion de especies ABRIGUE
+# Descarga datos GBIF para Modelacion de especies ABRIGUE
 ## Autor: Rodriguez-Espinoza J.
 ## github.com/jrodriguez88
 ## Octubre 2024
