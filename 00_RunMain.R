@@ -23,7 +23,7 @@ source("scripts/funciones_abrigue.R")
 source("scripts/01_datos_ABRIGUE_choco.R")
 
 # Patrones Climaticos Choco
-source("scripts/02_Patrones_climaticos_Choco.R")
+source("scripts/03_Patrones_climaticos_Choco.R")
 mapa_bivar_choco
 
 # Load data Caqueta
@@ -32,5 +32,4 @@ source("scripts/01_datos_ABRIGUE_caqueta.R")
 # Patrones Climaticos Caqueta
 source("scripts/02_Patrones_climaticos_Caqueta.R")
 mapa_bivar_caqueta
-finalPlot
 

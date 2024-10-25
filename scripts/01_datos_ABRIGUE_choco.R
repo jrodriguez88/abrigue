@@ -44,7 +44,7 @@ files_prec_choco <- list.files("data/ideam/precipitacion/choco/", recursive = T,
 ideam_prec_choco <- map(files_prec_choco, read_csv) %>% bind_rows() 
 
 estaciones_ideam_prec_choco <- ideam_prec_choco %>% 
-  dplyr::select(CodigoEstacion, NombreEstacion, Latitud, Longitud, Altitud) %>%
+  dplyr::select(CodigoEstacion, NombreEstacion, Latitud, Longitud, Altitud, FechaInstalacion, FechaSuspension, ) %>%
   distinct() %>%
   mutate(NombreEstacion = str_remove(NombreEstacion, "\\s*\\[.*?\\]") %>% str_to_title) %>%
   st_as_sf(coords = c("Longitud", "Latitud"), crs = 4326)
