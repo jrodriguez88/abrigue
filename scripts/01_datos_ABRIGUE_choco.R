@@ -27,7 +27,7 @@ abrigue_municipios_choco <- choco_municipios_shp[choco_municipios_shp$MpNombre %
                                                    c( "Bahía Solano", "Nuquí", "Juradó")]
 
 ## Digital Elevation Model #### 
-# For TPS interpolation
+# For interpolation
 
 DEM <- geodata::elevation_30s(country = "COL", path=tempdir())
 choco_dem <- crop_raster(DEM, choco_shp)
@@ -54,7 +54,7 @@ estaciones_ideam_prec_choco <- ideam_prec_choco %>%
 
 files_temp_choco <- list.files("data/ideam/temperatura/choco/", recursive = T, full.names = T, pattern = ".csv$")
 
-ideam_temp_choco <- map(files_temp_choco, read_csv) %>% bind_rows() 
+ideam_temp_choco <- map(files_temp_choco, read_csv) %>% bind_rows() %>% distinct()
 
 estaciones_ideam_temp_choco <- ideam_temp_choco %>% 
   dplyr::select(CodigoEstacion, NombreEstacion, Latitud, Longitud, Altitud) %>%

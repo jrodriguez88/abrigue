@@ -20,10 +20,12 @@ ext_choco <- ext(limites_choco)
 
 ## Prueba de descarga Geodata
 depths <- c(5, 15, 30, 60, 100, 200)
-depths <- c(100, 200)
+depths <- c( 100, 200)
 
-map(depths, ~soil_world(var="phh2o", depth=depths, path="data/soilgrids/"))
-test_SOC <- soil_world(var="soc", depth=5, path="data/soilgrids/")
+soc_soilgrids <- map(depths, ~soil_world(var="soc", depth=.x, path="data/soilgrids/"))
+ocs_soilgrids <- map(depths, ~soil_world(var="ocs", depth=.x, path="data/soilgrids/")) # Carbon stocks
+
+test_ocs <- soil_world(var="ocs", depth=60, path="data/soilgrids/")
 plot(test_SOC)
 
 soc5_choco <- crop(test_SOC, limites_choco, mask = T)

@@ -6,15 +6,20 @@
 
 # library(leaflet)
 source("https://raw.githubusercontent.com/jrodriguez88/agroclimR/refs/heads/main/R/get_metrics.R")
+source("https://raw.githubusercontent.com/jrodriguez88/agroclimR/refs/heads/main/R/get_metrics.R")
 
 plet(abrigue_municipios_choco, "MpNombre", split=TRUE, alpha=.2) |> 
   points(vect(estaciones_ideam_prec_choco), col="blue", cex=2, popup=TRUE) |> 
   points(vect(estaciones_ideam_temp_choco), col="red", cex=2, popup=TRUE)
 
 #Establecer estaciones y periodos
-estaciones_objetivo_choco <- c("Teresita La", "Cupica", "Panamericana", "Nuqui", "Arusi", "Amargal")
-ini_date <- "1981-01-01"
-end_date <- "2024-08-01"
+estaciones_objetivo <- c("Teresita La", "Cupica", "Panamericana", "Nuqui", "Arusi", "Amargal")
+ini_date <- ymd("1981-01-01")
+end_date <- ymd("2024-07-01")
+
+base_date <- seq.Date(ini_date, end_date, by = "month") %>% enframe(name = NULL, value = "date")
+baseline_ar6 <- seq.Date(ymd("1995-01-01"), ymd("2014-12-31"), by = "month") %>% 
+  enframe(name = NULL, value = "date")
 
 
 # Subset
@@ -23,15 +28,29 @@ ideam_prec <- ideam_prec_choco %>%
   mutate(date = as.Date(date)) %>%
   mutate(NombreEstacion = str_remove(NombreEstacion, "\\s*\\[.*?\\]") %>% str_to_title)
 
+test_data <- ideam_prec %>% distinct() %>% 
+  nest(ideam = c(date, ideam)) %>% 
+  mutate(ideam = map(ideam, ~left_join(base_date, .x))) %>%
+  mutate(ideam_baseline_ar6 = map(ideam, ~left_join(baseline_ar6, .x))) %>%
+  left_join(chirps_data_choco_ws %>% nest(chirps = -CodigoEstacion))
 
-chirps_choco_mensual_comparativa <- chirps_data_choco_ws %>% rename(chirps = value) %>%
-  right_join(ideam_prec) %>% 
+test_data %>%
+  mutate(na_pct = map_dbl(data, naniar::pct_miss)) %>%
+  mutate(na_pct_ar6 = map_dbl(baseline_ar6, naniar::pct_miss)) %>%
+  print(n=47)
+
+left_join(base_date, ideam_prec)
+
+
+chirps_choco_mensual_comparativa <- left_join(base_date, ideam_prec) %>% 
+  left_join(
+  chirps_data_choco_ws %>% rename(chirps = value)) %>%
   distinct() %>%
   pivot_longer(cols = -c(CodigoEstacion, NombreEstacion, date, year, month), names_to = "Fuente") 
 
-ideam_tmax <- ideam_temp_choco %>% filter(Etiqueta == "TMX_MEDIA_M") %>%
+ideam_tmax <- ideam_temp_choco %>% filter(Etiqueta == "TMX_MEDIA_M") %>% 
   select(CodigoEstacion, NombreEstacion, date = Fecha, ideam = Valor) %>%   
-  mutate(date = as.Date(date)) %>%
+  mutate(date = as.Date(date)) %>% distinct() %>%
   mutate(NombreEstacion = str_remove(NombreEstacion, "\\s*\\[.*?\\]") %>% str_to_title)
 
 era5_choco_tmax_comparativa <- era5_tmax_data_choco_ws %>% rename(era5 = value) %>%
@@ -42,7 +61,7 @@ era5_choco_tmax_comparativa <- era5_tmax_data_choco_ws %>% rename(era5 = value) 
 
 ideam_tmin <- ideam_temp_choco %>% filter(Etiqueta == "TMN_MEDIA_M") %>%
   select(CodigoEstacion, NombreEstacion, date = Fecha, ideam = Valor) %>%   
-  mutate(date = as.Date(date)) %>%
+  mutate(date = as.Date(date)) %>% distinct() %>%
   mutate(NombreEstacion = str_remove(NombreEstacion, "\\s*\\[.*?\\]") %>% str_to_title)
 
 
@@ -54,18 +73,18 @@ era5_choco_tmin_comparativa <- era5_tmin_data_choco_ws %>% rename(era5 = value) 
 
 
 ## Linea de tiempo
-time_line_estaciones(ideam_temp_choco, estaciones_objetivo_choco, ini_date, end_date)
-time_line_estaciones(ideam_prec_choco, estaciones_objetivo_choco, ini_date, end_date)
+time_line_estaciones(ideam_temp_choco, estaciones_objetivo, ini_date, end_date)
+time_line_estaciones(ideam_prec_choco, estaciones_objetivo, ini_date, end_date)
 
 
 ## Graficos comparativos
-lineplot_mensual_clima(chirps_choco_mensual_comparativa, estaciones_objetivo_choco)
-lineplot_mensual_clima(era5_choco_tmax_comparativa, estaciones_objetivo_choco, "Temperatura Maxima (oC)")
-lineplot_mensual_clima(era5_choco_tmin_comparativa, estaciones_objetivo_choco, "Temperatura Minima (oC)")
+lineplot_mensual_clima(chirps_choco_mensual_comparativa, estaciones_objetivo)
+lineplot_mensual_clima(era5_choco_tmax_comparativa, estaciones_objetivo, "Temperatura Maxima (oC)")
+lineplot_mensual_clima(era5_choco_tmin_comparativa, estaciones_objetivo, "Temperatura Minima (oC)")
 
-boxplot_mensual_clima(chirps_choco_mensual_comparativa, estaciones_objetivo_choco)
-boxplot_mensual_clima(era5_choco_tmax_comparativa, estaciones_objetivo_choco, "Temperatura Maxima (oC)")
-boxplot_mensual_clima(era5_choco_tmin_comparativa, estaciones_objetivo_choco, "Temperatura Minima (oC)")
+boxplot_mensual_clima(chirps_choco_mensual_comparativa, estaciones_objetivo)
+boxplot_mensual_clima(era5_choco_tmax_comparativa, estaciones_objetivo, "Temperatura Maxima (oC)")
+boxplot_mensual_clima(era5_choco_tmin_comparativa, estaciones_objetivo, "Temperatura Minima (oC)")
 
 
 
@@ -76,7 +95,7 @@ data_to_evaluate_chirps <- chirps_choco_mensual_comparativa  %>%
   pivot_wider(names_from = Fuente, values_from = value) 
 
 data_to_evaluate_eraTmax <- era5_choco_tmax_comparativa  %>% 
-  drop_na() %>% 
+  drop_na() %>% distinct() %>%
   # dplyr::summarise(n = dplyr::n(), .by = c(CodigoEstacion, date, year, month, NombreEstacion, Fuente)) |>
   # dplyr::filter(n > 1L) 
   #  filter(NombreEstacion %in% c("Teresita La", "Cupica", "Panamericana", "Nuqui", "Arusi")) %>%
@@ -84,8 +103,8 @@ data_to_evaluate_eraTmax <- era5_choco_tmax_comparativa  %>%
 
 data_to_evaluate_eraTmin <- era5_choco_tmin_comparativa  %>% 
   drop_na() %>% 
-  # dplyr::summarise(n = dplyr::n(), .by = c(CodigoEstacion, date, year, month, NombreEstacion, Fuente)) |>
-  # dplyr::filter(n > 1L) 
+  dplyr::summarise(n = dplyr::n(), .by = c(CodigoEstacion, date, year, month, NombreEstacion, Fuente)) |>
+  dplyr::filter(n > 1L)
   #  filter(NombreEstacion %in% c("Teresita La", "Cupica", "Panamericana", "Nuqui", "Arusi")) %>%
   pivot_wider(names_from = Fuente, values_from = value) 
 

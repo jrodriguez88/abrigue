@@ -54,7 +54,7 @@ estaciones_ideam_prec_caqueta <- ideam_prec_caqueta %>%
 
 files_temp_caqueta <- list.files("data/ideam/temperatura/caqueta/", recursive = T, full.names = T, pattern = ".csv$")
 
-ideam_temp_caqueta <- map(files_temp_caqueta, read_csv) %>% bind_rows() 
+ideam_temp_caqueta <- map(files_temp_caqueta, read_csv) %>% bind_rows() %>% distinct()
 
 estaciones_ideam_temp_caqueta <- ideam_temp_caqueta %>% 
   dplyr::select(CodigoEstacion, NombreEstacion, Latitud, Longitud, Altitud) %>%
