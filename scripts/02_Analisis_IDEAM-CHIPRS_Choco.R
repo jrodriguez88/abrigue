@@ -35,11 +35,11 @@ test_data <- ideam_prec %>% distinct() %>%
   left_join(chirps_data_choco_ws %>% nest(chirps = -CodigoEstacion))
 
 test_data %>%
-  mutate(na_pct = map_dbl(data, naniar::pct_miss)) %>%
-  mutate(na_pct_ar6 = map_dbl(baseline_ar6, naniar::pct_miss)) %>%
+  mutate(na_pct = map_dbl(ideam, naniar::pct_miss)) %>%
+  mutate(na_pct_ar6 = map_dbl(ideam_baseline_ar6, naniar::pct_miss)) %>%
   print(n=47)
 
-left_join(base_date, ideam_prec)
+
 
 
 chirps_choco_mensual_comparativa <- left_join(base_date, ideam_prec) %>% 
@@ -53,9 +53,9 @@ ideam_tmax <- ideam_temp_choco %>% filter(Etiqueta == "TMX_MEDIA_M") %>%
   mutate(date = as.Date(date)) %>% distinct() %>%
   mutate(NombreEstacion = str_remove(NombreEstacion, "\\s*\\[.*?\\]") %>% str_to_title)
 
-era5_choco_tmax_comparativa <- era5_tmax_data_choco_ws %>% rename(era5 = value) %>%
-  mutate(era5 = era5 - 273.15) %>% distinct() %>%
-  left_join(ideam_tmax) %>% 
+era5_choco_tmax_comparativa <- left_join(base_date, ideam_tmax) %>% 
+  left_join(era5_tmax_data_choco_ws %>% rename(era5 = value) %>%
+  mutate(era5 = era5 - 273.15) %>% distinct()) %>%
   distinct() %>%
   pivot_longer(cols = -c(CodigoEstacion, NombreEstacion, date, year, month), names_to = "Fuente") 
 
@@ -65,9 +65,9 @@ ideam_tmin <- ideam_temp_choco %>% filter(Etiqueta == "TMN_MEDIA_M") %>%
   mutate(NombreEstacion = str_remove(NombreEstacion, "\\s*\\[.*?\\]") %>% str_to_title)
 
 
-era5_choco_tmin_comparativa <- era5_tmin_data_choco_ws %>% rename(era5 = value) %>%
-  mutate(era5 = era5 - 273.15) %>%
-  right_join(ideam_tmin) %>% 
+era5_choco_tmin_comparativa <- left_join(base_date, ideam_tmin) %>% 
+  left_join(era5_tmin_data_choco_ws %>% rename(era5 = value) %>%
+              mutate(era5 = era5 - 273.15) %>% distinct()) %>%
   distinct() %>%
   pivot_longer(cols = -c(CodigoEstacion, NombreEstacion, date, year, month), names_to = "Fuente") 
 
@@ -95,46 +95,96 @@ data_to_evaluate_chirps <- chirps_choco_mensual_comparativa  %>%
   pivot_wider(names_from = Fuente, values_from = value) 
 
 data_to_evaluate_eraTmax <- era5_choco_tmax_comparativa  %>% 
-  drop_na() %>% distinct() %>%
+  drop_na() %>% 
+  distinct() %>%
   # dplyr::summarise(n = dplyr::n(), .by = c(CodigoEstacion, date, year, month, NombreEstacion, Fuente)) |>
   # dplyr::filter(n > 1L) 
   #  filter(NombreEstacion %in% c("Teresita La", "Cupica", "Panamericana", "Nuqui", "Arusi")) %>%
-  pivot_wider(names_from = Fuente, values_from = value) 
+  pivot_wider(names_from = Fuente, values_from = value) %>% 
+  unnest(ideam) %>% unnest(era5) %>% drop_na()
 
-data_to_evaluate_eraTmin <- era5_choco_tmin_comparativa  %>% 
+data_to_evaluate_eraTmin <- era5_choco_tmin_comparativa  %>%  
+  distinct() %>%
   drop_na() %>% 
-  dplyr::summarise(n = dplyr::n(), .by = c(CodigoEstacion, date, year, month, NombreEstacion, Fuente)) |>
-  dplyr::filter(n > 1L)
+  # dplyr::summarise(n = dplyr::n(), .by = c(CodigoEstacion, date, year, month, NombreEstacion, Fuente)) |>
+  # dplyr::filter(n > 1L)
   #  filter(NombreEstacion %in% c("Teresita La", "Cupica", "Panamericana", "Nuqui", "Arusi")) %>%
-  pivot_wider(names_from = Fuente, values_from = value) 
+  pivot_wider(names_from = Fuente, values_from = value)  %>% 
+  unnest(ideam) %>% unnest(era5) %>% drop_na()
 
 
-data_to_lm_plot %>%
+
+
+data_to_evaluate_chirps %>% rename(obs = ideam, sim = chirps) %>% get_metrics
+data_to_evaluate_eraTmax %>% rename(obs = ideam, sim = era5) %>% get_metrics
+data_to_evaluate_eraTmin %>% rename(obs = ideam, sim = era5) %>% get_metrics
+
+
+## CHIRPS
+data_to_evaluate_chirps %>%
   ggplot(aes(chirps, ideam, color = month)) + geom_point() + 
   geom_smooth(aes(chirps, ideam), method = "lm", inherit.aes = F) +
   facet_wrap(~NombreEstacion) +
   theme_minimal() +
   scale_color_viridis_c()
 
-data_to_lm_plot %>% rename(obs = ideam, sim = chirps) %>% get_metrics
+data_to_evaluate_chirps %>% rename(obs = ideam, sim = chirps) %>% 
+  get_metrics
 
-data_to_lm_plot %>% rename(obs = ideam, sim = chirps) %>% split(.$NombreEstacion) %>%
+data_to_evaluate_chirps %>% rename(obs = ideam, sim = chirps) %>% 
+  split(.$NombreEstacion) %>%
   map(get_metrics)
 
-data_to_lm_plot %>% rename(obs = ideam, sim = chirps) %>% get_metrics
 
-tidy_data <- function(db1, db2, iyear = 1985, fyear = 2010, join_by = "date") {
-  
-  left_join(db1, db2, by = join_by) %>%
-    filter(lubridate::year(date) >= iyear,
-           lubridate::year(date) <= fyear) %>%
-    gather(var, value, -date)%>%
-    mutate(source = case_when(str_detect(var, "[.x]$") ~ "obs", 
-                              str_detect(var, "[.y]$") ~ "sim"),
-           var = str_sub(var, 1, -3)) %>%
-    spread(source, value) %>%
-    nest(-var)
-  
+## ERA5 Tmax
+data_to_evaluate_eraTmax %>%
+  ggplot(aes(era5, ideam, color = month)) + geom_point() + 
+  geom_smooth(aes(era5, ideam), method = "lm", inherit.aes = F) +
+  facet_wrap(~NombreEstacion) +
+  theme_minimal() +
+  scale_color_viridis_c()
+
+data_to_evaluate_eraTmax %>% rename(obs = ideam, sim = era5) %>% 
+  get_metrics
+
+data_to_evaluate_eraTmax %>% rename(obs = ideam, sim = era5) %>% 
+  split(.$NombreEstacion) %>%
+  map(get_metrics) %>% bind_rows(.id = "Nombre_estacion")
+
+## ERA5 Tmin
+
+data_to_evaluate_eraTmin %>%
+  ggplot(aes(era5, ideam, color = month)) + geom_point() + 
+  geom_smooth(aes(era5, ideam), method = "lm", inherit.aes = F) +
+  facet_wrap(~NombreEstacion) +
+  theme_minimal() +
+  scale_color_viridis_c()
+
+data_to_evaluate_eraTmin %>% rename(obs = ideam, sim = era5) %>% 
+  get_metrics
+
+data_to_evaluate_eraTmin %>% rename(obs = ideam, sim = era5) %>% 
+  split(.$NombreEstacion) %>%
+  map(get_metrics) %>% bind_rows(.id = "Nombre_estacion")
+
+
+
+
+# 
+# 
+# 
+# tidy_data <- function(db1, db2, iyear = 1985, fyear = 2010, join_by = "date") {
+#   
+#   left_join(db1, db2, by = join_by) %>%
+#     filter(lubridate::year(date) >= iyear,
+#            lubridate::year(date) <= fyear) %>%
+#     gather(var, value, -date)%>%
+#     mutate(source = case_when(str_detect(var, "[.x]$") ~ "obs", 
+#                               str_detect(var, "[.y]$") ~ "sim"),
+#            var = str_sub(var, 1, -3)) %>%
+#     spread(source, value) %>%
+#     nest(-var)}
+#   
 
 
 
