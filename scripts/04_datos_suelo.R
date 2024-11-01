@@ -35,15 +35,28 @@ ocd_soilgrids <- map(depths, ~soil_world(var="ocd", depth=.x, path="data/soilgri
 
 
 
-soc5_choco <- crop(test_SOC, limites_choco, mask = T)
+soc_choco <- crop(test_SOC, limites_choco, mask = T)
 soc5_caqueta <- crop(test_SOC, limites_caqueta, mask = T)
 
 plot(soc5_choco)
 plot(soc5_caqueta)
 
 
-sbod_files <- list.files("data/soilgrids/soil_world/", pattern = "soc_", full.names = T)
+bdod_files <- list.files("data/soilgrids/soil_world/", pattern = "bdod_", full.names = T)
 soc_files <- list.files("data/soilgrids/soil_world/", pattern = "soc_", full.names = T)
+sand_files <- list.files("data/soilgrids/soil_world/", pattern = "sand_", full.names = T)
+clay_files <- list.files("data/soilgrids/soil_world/", pattern = "clay_", full.names = T)
+nitrogen_files <- list.files("data/soilgrids/soil_world/", pattern = "nitrogen_", full.names = T)
+phh2o_files <- list.files("data/soilgrids/soil_world/", pattern = "phh2o_", full.names = T)
+ocd_files <- list.files("data/soilgrids/soil_world/", pattern = "ocd_", full.names = T)
 
 ttt <- rast(soc_files)
 plot(ttt)
+
+rast_list <- list(bdod_files, soc_files,  sand_files, clay_files,  nitrogen_files, phh2o_files, ocd_files) %>%
+  map(.x = .,  ~rast(.x) %>% crop(limites_caqueta, mask = T))
+
+
+rast_list %>% set_names(c("bdod", "soc",  "sand", "clay",  "nitrogen", "phh2o", "ocd")) %>% map(~writeRaster(., paste0(names(.), "_caqueta.tif")))
+
+
