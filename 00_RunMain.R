@@ -15,21 +15,26 @@ library(leaflet)
 library(biscale)
 library(cowplot)
 
+library(naniar)
+
 source("scripts/funciones_abrigue.R")
+
 
 
 
 # Load data Choco
 source("scripts/01_datos_ABRIGUE_choco.R")
 
+# Load data Caqueta
+source("scripts/01_datos_ABRIGUE_caqueta.R")
+
 # Patrones Climaticos Choco
 source("scripts/03_Patrones_climaticos_Choco.R")
 mapa_bivar_choco
 
-# Load data Caqueta
-source("scripts/01_datos_ABRIGUE_caqueta.R")
-
 # Patrones Climaticos Caqueta
 source("scripts/02_Patrones_climaticos_Caqueta.R")
 mapa_bivar_caqueta
+
+source("scripts/05_distribucion_especies_gbif.R")
 
