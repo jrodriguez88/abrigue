@@ -13,7 +13,7 @@ plet(abrigue_municipios_choco, "MpNombre", split=TRUE, alpha=.2) |>
   points(vect(estaciones_ideam_temp_choco), col="red", cex=2, popup=TRUE)
 
 #Establecer estaciones y periodos
-estaciones_objetivo <- c("Teresita La", "Cupica", "Panamericana", "Nuqui", "Arusi", "Amargal")
+estaciones_objetivo <- c("Teresita La", "Cupica", "Panamericana", "Nuqui", "Arusi", "Amargal", "Loma La")
 ini_date <- ymd("1981-01-01")
 end_date <- ymd("2024-07-01")
 
@@ -40,7 +40,7 @@ test_data %>%
   print(n=47)
 
 
-
+# Crea tablas comparativas datos Observados vs Reanalisis
 
 chirps_choco_mensual_comparativa <- left_join(base_date, ideam_prec) %>% 
   left_join(
@@ -113,12 +113,15 @@ data_to_evaluate_eraTmin <- era5_choco_tmin_comparativa  %>%
   unnest(ideam) %>% unnest(era5) %>% drop_na()
 
 
+## Evaluacion de reanalisis
+
+eval_reanalisis <- list(chirps = data_to_evaluate_chirps %>% rename(obs = ideam, sim = chirps) %>% get_metrics,
+                        era_tmax = data_to_evaluate_eraTmax %>% rename(obs = ideam, sim = era5) %>% get_metrics,
+                        era_tmin = data_to_evaluate_eraTmin %>% rename(obs = ideam, sim = era5) %>% get_metrics) %>%
+  bind_rows(.id = "Fuente")
 
 
-data_to_evaluate_chirps %>% rename(obs = ideam, sim = chirps) %>% get_metrics
-data_to_evaluate_eraTmax %>% rename(obs = ideam, sim = era5) %>% get_metrics
-data_to_evaluate_eraTmin %>% rename(obs = ideam, sim = era5) %>% get_metrics
-
+eval_reanalisis
 
 ## CHIRPS
 data_to_evaluate_chirps %>%
