@@ -1,11 +1,11 @@
-## Analsis Estaciones IDEAM vs CHIRPS , ERA5 ####
+## Analsis Estaciones IDEAM vs CHIRPS , ERA5- Choco ####
 ## Autor: Rodriguez-Espinoza J.
 ## github.com/jrodriguez88
 ## Octubre 2024
 
 
 # library(leaflet)
-source("https://raw.githubusercontent.com/jrodriguez88/agroclimR/refs/heads/main/R/get_metrics.R")
+#source("https://raw.githubusercontent.com/jrodriguez88/agroclimR/refs/heads/main/R/get_metrics.R")
 source("https://raw.githubusercontent.com/jrodriguez88/agroclimR/refs/heads/main/R/get_metrics.R")
 
 plet(abrigue_municipios_choco, "MpNombre", split=TRUE, alpha=.2) |> 
@@ -133,7 +133,8 @@ data_to_evaluate_chirps %>% rename(obs = ideam, sim = chirps) %>%
 
 data_to_evaluate_chirps %>% rename(obs = ideam, sim = chirps) %>% 
   split(.$NombreEstacion) %>%
-  map(get_metrics)
+  map(get_metrics) %>% bind_rows(.id = "Nombre_estacion") %>%
+  print(n=47)
 
 
 ## ERA5 Tmax
@@ -149,7 +150,8 @@ data_to_evaluate_eraTmax %>% rename(obs = ideam, sim = era5) %>%
 
 data_to_evaluate_eraTmax %>% rename(obs = ideam, sim = era5) %>% 
   split(.$NombreEstacion) %>%
-  map(get_metrics) %>% bind_rows(.id = "Nombre_estacion")
+  map(get_metrics) %>% bind_rows(.id = "Nombre_estacion") %>%
+  print(n=47)
 
 ## ERA5 Tmin
 
@@ -165,7 +167,8 @@ data_to_evaluate_eraTmin %>% rename(obs = ideam, sim = era5) %>%
 
 data_to_evaluate_eraTmin %>% rename(obs = ideam, sim = era5) %>% 
   split(.$NombreEstacion) %>%
-  map(get_metrics) %>% bind_rows(.id = "Nombre_estacion")
+  map(get_metrics) %>% bind_rows(.id = "Nombre_estacion") %>%
+  print(n=47)
 
 
 
