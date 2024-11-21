@@ -32,12 +32,12 @@ caqueta_ppt <- terra::crop(annual_mean_ppt, y = project(caqueta_shp, annual_mean
 caqueta_temp_resampled <- resample(caqueta_temp, caqueta_ppt)
 
 # Combinar los rasters una vez que tienen la misma extensión y resolución
-temp_ppt <- c(caqueta_temp_resampled, caqueta_ppt)
+temp_ppt_caqueta <- c(caqueta_temp_resampled, caqueta_ppt)
 
 
 # Assign descriptive names to each raster layer in the stack
-names(temp_ppt) <- c("temp", "ppt")
-temp_ppt_df <- temp_ppt |> 
+names(temp_ppt_caqueta) <- c("temp", "ppt")
+temp_ppt_df <- temp_ppt_caqueta |> 
   # project(cho) |> 
   as.data.frame(xy = TRUE) |> drop_na()
 

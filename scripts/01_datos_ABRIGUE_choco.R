@@ -29,7 +29,8 @@ abrigue_municipios_choco <- choco_municipios_shp[choco_municipios_shp$MpNombre %
 ## Digital Elevation Model #### 
 # For interpolation
 
-DEM <- geodata::elevation_30s(country = "COL", path=tempdir())
+# DEM <- geodata::elevation_30s(country = "COL", path=tempdir())
+DEM <- rast("data/spatial/dem_col.tif")
 choco_dem <- crop_raster(DEM, choco_shp)
 
 
@@ -165,3 +166,4 @@ era5_tmin_data_choco_ws<- extract_from_era(tb_era_choco %>%
 era5_tmax_data_choco_ws <- extract_from_era(tb_era_choco %>% 
                                               filter(var == "tmax") %>% 
                                               pull(file), estaciones_ideam_temp_choco)
+

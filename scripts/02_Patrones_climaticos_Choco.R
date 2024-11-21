@@ -31,12 +31,12 @@ choco_ppt <- terra::crop(annual_mean_ppt, y = project(choco_shp, annual_mean_ppt
 choco_temp_resampled <- resample(choco_temp, choco_ppt)
 
 # Combinar los rasters una vez que tienen la misma extensión y resolución
-temp_ppt <- c(choco_temp_resampled, choco_ppt)
+temp_ppt_choco <- c(choco_temp_resampled, choco_ppt)
 
 
 # Assign descriptive names to each raster layer in the stack
-names(temp_ppt) <- c("temp", "ppt")
-temp_ppt_df <- temp_ppt |> 
+names(temp_ppt_choco) <- c("temp", "ppt")
+temp_ppt_df <- temp_ppt_choco |> 
   # project(cho) |> 
   as.data.frame(xy = TRUE) |> drop_na()
 

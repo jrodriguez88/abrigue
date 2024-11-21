@@ -1,4 +1,4 @@
-## Analsis Estaciones IDEAM vs CHIRPS , ERA5 ####
+## Analsis Estaciones IDEAM vs CHIRPS , ERA5  - Choco####
 ## Autor: Rodriguez-Espinoza J.
 ## github.com/jrodriguez88
 ## Octubre 2024
@@ -6,7 +6,7 @@
 
 # library(leaflet)
 source("https://raw.githubusercontent.com/jrodriguez88/agroclimR/refs/heads/main/R/get_metrics.R")
-source("https://raw.githubusercontent.com/jrodriguez88/agroclimR/refs/heads/main/R/get_metrics.R")
+#source("https://raw.githubusercontent.com/jrodriguez88/agroclimR/refs/heads/main/R/get_metrics.R")
 
 plet(abrigue_municipios_choco, "MpNombre", split=TRUE, alpha=.2) |> 
   points(vect(estaciones_ideam_prec_choco), col="blue", cex=2, popup=TRUE) |> 
@@ -115,9 +115,10 @@ data_to_evaluate_eraTmin <- era5_choco_tmin_comparativa  %>%
 
 
 
-data_to_evaluate_chirps %>% rename(obs = ideam, sim = chirps) %>% get_metrics
-data_to_evaluate_eraTmax %>% rename(obs = ideam, sim = era5) %>% get_metrics
-data_to_evaluate_eraTmin %>% rename(obs = ideam, sim = era5) %>% get_metrics
+eval_reanalisis <- list(chirps = data_to_evaluate_chirps %>% rename(obs = ideam, sim = chirps) %>% get_metrics,
+     era_tmax = data_to_evaluate_eraTmax %>% rename(obs = ideam, sim = era5) %>% get_metrics,
+     era_tmin = data_to_evaluate_eraTmin %>% rename(obs = ideam, sim = era5) %>% get_metrics) %>%
+  bind_rows(, .id = "Fuente")
 
 
 ## CHIRPS

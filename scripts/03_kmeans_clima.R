@@ -4,11 +4,11 @@
 ## Octubre 2024
 
 # Directorio de los archivos raster
-plot(chirps_choco_linea_base_1995_2014, main = "Precipitacion anual - referencia")
+plot(precipitacion_anual_media, main = "Precipitacion anual - referencia")
 
-plot(temp_ppt)
+# plot(temp_ppt)
 
-precipitacion_anual_media <- chirps_choco_linea_base_1995_2014
+# precipitacion_anual_media <- chirps_choco_linea_base_1995_2014
 
 
 # # Resample the annual mean temperature raster to a finer resolution (approximately 1 km)
@@ -50,7 +50,7 @@ valid_indices <- complete.cases(r_matrix)
 
 # Aplicar K-means solo a los píxeles válidos
 set.seed(123) # Para reproducibilidad
-k <- 4 # Número de clusters, ajusta según lo que necesites
+k <- numero_cluster # Número de clusters, ajusta según lo que necesites
 kmeans_result <- kmeans(r_matrix[valid_indices, ], centers = k, nstart = 25)
 
 # Crear un nuevo raster con la misma estructura que el original
@@ -68,16 +68,16 @@ plot(cluster_raster[[1]], main = "K-means Clustering")
 
 
 # Establecer la configuración de la ventana gráfica para 1 fila y 3 columnas
-par(mfrow = c(1, 4))
+par(mfrow = paneles)
 
 # Graficar el primer raster: Elevación
-plot(choco_dem, main = "Elevación (m)", col = map.pal("elevation")) 
+plot(dem, main = "Elevación (m) - STRM - 1km", col = map.pal("elevation")) 
 
 # Graficar el segundo raster: Precipitación anual media
-plot(precipitacion_anual_media, main = "Precipitación Anual Media (mm)", col = rev(map.pal("viridis")))
+plot(precipitacion_anual_media, main = "Precipitación Anual Media (mm) - CHIRPS ~ 5 km", col = map.pal("blues"))
 
 # # Graficar el tercer raster
-plot(annual_mean_temp - 273.15, main = "Temperatura (oC)", col = map.pal("plasma")) 
+plot(annual_mean_temp - 273.15, main = "Temperatura Media (oC) - ERA 5 ~ 30 km", col = map.pal("plasma")) 
 
 # Graficar el tercer raster: K-means Clustering
 plot(cluster_raster[[1]], main = "K-means Clustering", col = rainbow(5)) # Ajusta la paleta según el número de clusters
@@ -88,7 +88,7 @@ par(mfrow = c(1, 1))
 
 
 # Extraer los valores de precipitación y los clusters
-precipitacion_values <- values(precipitacion_anual_media)
+precipitacion_values <- values(temp_ppt$ppt)
 cluster_values <- values(cluster_raster)
 
 # Crear un data frame con los valores

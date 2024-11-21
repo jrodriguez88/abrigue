@@ -29,7 +29,8 @@ abrigue_municipios_caqueta <- caqueta_municipios_shp[caqueta_municipios_shp$MpNo
 ## Digital Elevation Model ####
 # For TPS interpolation
 
-DEM <- geodata::elevation_30s(country = "COL", path=tempdir())
+# DEM <- geodata::elevation_30s(country = "COL", path=tempdir())
+DEM <- rast("data/spatial/dem_col.tif")
 caqueta_dem <- crop_raster(DEM, caqueta_shp)
 
 

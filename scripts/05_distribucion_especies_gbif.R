@@ -1,5 +1,5 @@
 # Descarga datos GBIF para Modelacion de especies ABRIGUE
-## Autor: Rodriguez-Espinoza J.
+## Autores: Rodriguez-Espinoza J. // Ordoñez-Loaiza L.
 ## github.com/jrodriguez88
 ## Octubre 2024
 
@@ -97,7 +97,8 @@ map(c(coco_gbif_choco, vainilla_gbif_choco), nrow)
 
 ## Mapas de Ocurrencia - GBIF ----
 
-plot(limites_caqueta)
+plot(dem, main = "Elevación (m) - STRM - 1km", col = map.pal("elevation"))
+lines(limites_caqueta)
 lines(municipios_caqueta)
 points(cacao_gbif_caqueta, col='chocolate', pch=15, cex= 1.5)
 points(canangucha_gbif_caqueta, col='darkred', pch=17, cex= 1.5)
@@ -108,7 +109,8 @@ legend(x = -73.5, y = 3, # Coordinates
        pch = c(15, 17, 19))
 
 
-plot(limites_choco)
+plot(choco_dem, main = "Elevación (m) - STRM - 1km", col = map.pal("elevation"))
+lines(limites_choco)
 lines(municipios_choco)
 points(coco_gbif_choco, col='brown', pch=15, cex= 1)
 points(vainilla_gbif_choco, col= 'darkgreen', pch=17, cex= 1)
@@ -117,4 +119,20 @@ legend(x = -76.85, y = 8.4, # Coordinates
        col = c('brown', 'darkgreen'),
        pch = c(15, 17))
   
-par(mfrow = c(1,1))
+par(mfrow = c(1,2))
+
+
+# Guardar datos
+dir.create("data/gbif/")
+list_data <- list(
+  cacao = cacao_gbif_caqueta,
+  canangucha = canangucha_gbif_caqueta,
+  copoazu = copoazu_gbif_caqueta,
+  coco = coco_gbif_choco,
+  vainilla = vainilla_gbif_choco) 
+
+list_data %>% map2(.x = ., .y = names(.), ~writeVector(.x, filename = paste0("data/gbif/", .y, ".gpkg")))
+
+list_data %>% enframe() %>%
+  mutate(table = map(value, as_tibble)) %>% 
+  mutate(map2(table, name, ~write_csv(.x, file = paste0("data/gbif/", .y, ".csv"))))
