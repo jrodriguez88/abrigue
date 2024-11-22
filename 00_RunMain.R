@@ -15,6 +15,7 @@ library(leaflet)
 library(biscale)
 library(cowplot)
 library(naniar)
+library(rsoi)
 
 source("scripts/funciones_abrigue.R")
 

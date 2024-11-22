@@ -7,15 +7,16 @@
 #library(rsoi)
 
 
-# Preparar los datos de los índices ENSO ----
-ONI <- download_enso()
-MEI <- download_mei()
-
 # Ejemplo Choco
 # Cargar los datos raster de precipitación ----
 chirps_raster_mensual_choco
 chirps_raster_mensual_choco[chirps_raster_mensual_choco < 0] <- NA
 
+
+
+# Preparar los datos de los índices ENSO ----
+ONI <- download_enso()
+MEI <- download_mei()
 
 
 # gráfico ONI
@@ -156,3 +157,40 @@ ggplot(df_boxplot, aes(x = Fase, y = Precipitacion, fill = Fase)) +
   scale_fill_manual(values = c("El Niño" = "red", "La Niña" = "blue", "Neutral" = "gray")) +
   labs(title = "Distribución de Precipitación según Fase ENSO", x = "Fase ENSO", y = "Precipitación (mm)") +
   theme_minimal()
+
+
+
+######
+# Crear una variable temporal en meses desde el inicio
+time_months <- 1:nlyr(chirps_raster_mensual_choco)
+
+# Definir una función para calcular la tendencia
+calc_trend <- function(y) {
+  if (all(is.na(y))) {
+    return(NA)
+  } else {
+    model <- lm(y ~ time_months)
+    return(coef(model)[2])  # La pendiente
+  }
+}
+
+
+# Aplicar la función calc_trend a cada píxel
+precip_trend <- app(chirps_raster_mensual_choco, calc_trend)
+
+# Visualizar el raster de tendencias
+plot(precip_trend, main = "Tendencia de Precipitación (mm/mes)")
+
+
+# Convertir el raster a data frame
+df_trend <- as.data.frame(precip_trend, xy = TRUE)
+names(df_trend)[3] <- "trend"
+
+# Crear el mapa
+ggplot(df_trend, aes(x = x, y = y, fill = trend)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  coord_equal() +
+  labs(title = "Tendencia de Precipitación", fill = "mm/mes") +
+  theme_minimal()
+
