@@ -13,6 +13,9 @@ chirps_raster_mensual_choco
 chirps_raster_mensual_choco[chirps_raster_mensual_choco < 0] <- NA
 
 
+raster_ <- chirps_raster_mensual_caqueta
+chirps_raster_mensual_caqueta[chirps_raster_mensual_caqueta < 0] <- NA
+raster_ <- chirps_raster_mensual_caqueta
 
 # Preparar los datos de los índices ENSO ----
 ONI <- download_enso()
@@ -62,7 +65,7 @@ ggplot(drop_na(MEI), aes(x = Date, y = MEI, fill = Phase)) +
 # Alinear las fechas de los datos raster con las fases ENSO ----
 
 # Obtener los nombres de las capas
-layer_names <- names(chirps_raster_mensual_choco)
+layer_names <- names(raster_)
 
 # Extraer año y mes de los nombres de las capas
 dates <- str_extract(layer_names, "\\d{4}\\.\\d{2}")
@@ -71,7 +74,7 @@ dates <- str_extract(layer_names, "\\d{4}\\.\\d{2}")
 dates <- as.Date(paste0(dates, ".01"), format = "%Y.%m.%d")
 
 # Asignar las fechas a las capas raster
-time(chirps_raster_mensual_choco) <- dates
+time(raster_) <- dates
 
 
 # Crear un dataframe con las fechas de las capas raster
@@ -91,16 +94,16 @@ indices_nina <- which(raster_phases$phase == "Cool Phase/La Nina")
 indices_neutral <- which(raster_phases$phase == "Neutral Phase")
 
 # Promedio histórico
-precip_promedio_historico <- mean(chirps_raster_mensual_choco, na.rm = TRUE)
+precip_promedio_historico <- mean(raster_, na.rm = TRUE)
 
 # Promedio durante El Niño
-precip_promedio_nino <- mean(chirps_raster_mensual_choco[[indices_nino]], na.rm = TRUE)
+precip_promedio_nino <- mean(raster_[[indices_nino]], na.rm = TRUE)
 
 # Promedio durante La Niña
-precip_promedio_nina <- mean(chirps_raster_mensual_choco[[indices_nina]], na.rm = TRUE)
+precip_promedio_nina <- mean(raster_[[indices_nina]], na.rm = TRUE)
 
 # Promedio durante Fase Neutral
-precip_promedio_neutral <- mean(chirps_raster_mensual_choco[[indices_neutral]], na.rm = TRUE)
+precip_promedio_neutral <- mean(raster_[[indices_neutral]], na.rm = TRUE)
 
 
 # Crear mapas comparativos ----
@@ -135,9 +138,9 @@ ggplot(df_historico, aes(x = x, y = y, fill = mean)) +
 # Crear box plots de las diferencias de precipitación ----
 
 # Extraer valores de precipitación para cada fase
-vals_nino <- values(chirps_raster_mensual_choco[[indices_nino]])
-vals_nina <- values(chirps_raster_mensual_choco[[indices_nina]])
-vals_neutral <- values(chirps_raster_mensual_choco[[indices_neutral]])
+vals_nino <- values(raster_[[indices_nino]])
+vals_nina <- values(raster_[[indices_nina]])
+vals_neutral <- values(raster_[[indices_neutral]])
 
 # Crear dataframes con los valores y la fase correspondiente
 df_nino <- data.frame(Precipitacion = as.vector(vals_nino), Fase = "El Niño")
