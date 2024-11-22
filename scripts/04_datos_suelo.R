@@ -53,10 +53,15 @@ ocd_files <- list.files("data/soilgrids/soil_world/", pattern = "ocd_", full.nam
 ttt <- rast(soc_files)
 plot(ttt)
 
+
+ttt %>% crop(limites_choco, mask = T) %>% plot()
+
 rast_list <- list(bdod_files, soc_files,  sand_files, clay_files,  nitrogen_files, phh2o_files, ocd_files) %>%
   map(.x = .,  ~rast(.x) %>% crop(limites_caqueta, mask = T))
 
 
-rast_list %>% set_names(c("bdod", "soc",  "sand", "clay",  "nitrogen", "phh2o", "ocd")) %>% map(~writeRaster(., paste0(names(.), "_caqueta.tif")))
+rast_list %>% set_names(c("bdod", "soc",  "sand", "clay",  "nitrogen", "phh2o", "ocd")) %>% 
+  map(~writeRaster(., paste0(names(.), "_caqueta.tif")))
 
-
+par(mfrow = c(1, 2))
+plot(rast("data/soilgrids/choco/soc_0-5cm_mean_30s.tif"), main = "SoilGrids - Carbono Organico en el Suelo -  Choco", , col = map.pal("elevation"))

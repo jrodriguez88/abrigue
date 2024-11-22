@@ -134,7 +134,8 @@ data_to_evaluate_chirps %>% rename(obs = ideam, sim = chirps) %>%
 
 data_to_evaluate_chirps %>% rename(obs = ideam, sim = chirps) %>% 
   split(.$NombreEstacion) %>%
-  map(get_metrics)
+  map(get_metrics) %>% bind_rows(.id = "Nombre_estacion") %>%
+  print(n=47)
 
 
 ## ERA5 Tmax

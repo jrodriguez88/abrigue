@@ -13,10 +13,14 @@ plet(abrigue_municipios_caqueta, "MpNombre", split=TRUE, alpha=.2) |>
   points(vect(estaciones_ideam_temp_caqueta), col="red", cex=2, popup=TRUE)
 
 #Establecer estaciones y periodos
-estaciones_objetivo_caqueta <- c(unique(ideam_tmax$NombreEstacion))
-ini_date <- "1981-01-01"
-end_date <- "2024-08-01"
+estaciones_objetivo_caqueta <- c(unique(estaciones_ideam_temp_caqueta$NombreEstacion))
+ini_date <- ymd("1981-01-01")
+end_date <- ymd("2024-07-01")
 
+
+base_date <- seq.Date(ini_date, end_date, by = "month") %>% enframe(name = NULL, value = "date")
+baseline_ar6 <- seq.Date(ymd("1995-01-01"), ymd("2014-12-31"), by = "month") %>% 
+  enframe(name = NULL, value = "date")
 
 # Subset
 ideam_prec <- ideam_prec_caqueta %>% 
