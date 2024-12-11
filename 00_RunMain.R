@@ -33,7 +33,7 @@ mapa_bivar_choco
 precipitacion_anual_media <- temp_ppt_choco$ppt
 annual_mean_temp <- temp_ppt_choco$temp
 temp_ppt <- temp_ppt_choco ; dem <- choco_dem
-numero_cluster <- 5 ; paneles <- c(1, 4)
+numero_cluster <- 6 ; paneles <- c(1, 4)
 source("scripts/03_kmeans_clima.R")
 
 # Patrones Climaticos Caqueta
@@ -42,7 +42,7 @@ mapa_bivar_caqueta
 precipitacion_anual_media <- temp_ppt_caqueta$ppt
 annual_mean_temp <- temp_ppt_caqueta$temp
 temp_ppt <- temp_ppt_caqueta ; dem <- caqueta_dem
-numero_cluster <- 5 ; paneles <- c(2, 2)
+numero_cluster <- 6 ; paneles <- c(2, 2)
 source("scripts/03_kmeans_clima.R")
 
 source("scripts/05_distribucion_especies_gbif.R")

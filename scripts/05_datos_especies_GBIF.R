@@ -97,19 +97,19 @@ map(c(coco_gbif_choco, vainilla_gbif_choco), nrow)
 
 ## Mapas de Ocurrencia - GBIF ----
 
-plot(dem, main = "Elevación (m) - STRM - 1km", col = map.pal("elevation"))
+plot(dem, main = "Ocurrencia Especies Caquetá - GBIF", col = map.pal("elevation"))
 lines(limites_caqueta)
 lines(municipios_caqueta)
 points(cacao_gbif_caqueta, col='chocolate', pch=15, cex= 1.5)
 points(canangucha_gbif_caqueta, col='darkred', pch=17, cex= 1.5)
-points(copoazu_gbif_caqueta, col= 'yellow', pch=19, cex= 1.5)
+points(copoazu_gbif_caqueta, col= 'black', pch=19, cex= 1.5)
 legend(x = -73.5, y = 3, # Coordinates
        legend = c("Cacao", "Cañangucha", "Copoazu"),
-       col = c('chocolate', 'darkred', 'yellow'),
+       col = c('chocolate', 'darkred', 'black'),
        pch = c(15, 17, 19))
 
 
-plot(choco_dem, main = "Elevación (m) - STRM - 1km", col = map.pal("elevation"))
+plot(choco_dem, main = "Ocurrencia Especies Chocó - GBIF", col = map.pal("elevation"))
 lines(limites_choco)
 lines(municipios_choco)
 points(coco_gbif_choco, col='brown', pch=15, cex= 1)

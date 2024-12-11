@@ -7,6 +7,10 @@ files_prec <- list.files("data/worldclim/choco/", full.names = TRUE, pattern = "
 files_tmax <- list.files("data/worldclim/choco/", full.names = TRUE, pattern = "tmax")
 files_tmin <- list.files("data/worldclim/choco/", full.names = TRUE, pattern = "tmin")
 
+files_prec <- list.files("data/worldclim/caqueta/", full.names = TRUE, pattern = "prec")
+files_tmax <- list.files("data/worldclim/caqueta/", full.names = TRUE, pattern = "tmax")
+files_tmin <- list.files("data/worldclim/caqueta/", full.names = TRUE, pattern = "tmin")
+
 
 
 #Precipitacion
@@ -24,10 +28,12 @@ sum_245 <- files_sp245 %>% map(~app(rast(.x), fun = "sum") )
 sum_585 <- files_sp585 %>% map(~app(rast(.x), fun = "sum") )
 
 
+baseline_ppt <- caqueta_ppt
+
 par(mfrow = c(1, 3))
-plot(choco_ppt)
-plot(app(do.call(c, sum_245), mean))
-plot(app(do.call(c, sum_585), mean))
+plot(baseline_ppt, main = "Linea Base CHIRPS")
+plot(app(do.call(c, sum_245), mean), main = "SSP 245")
+plot(app(do.call(c, sum_585), mean), main = "SSP 585")
 
 
 # Comparacion Escenarios
@@ -46,7 +52,7 @@ map(sum_245, as.vector) %>%
   ) %>%
   bind_rows(.,
             
-            choco_ppt %>% as.vector() %>% 
+            baseline_ppt %>% as.vector() %>% 
               enframe %>% drop_na() %>% 
               mutate(Escenario = "Linea Base CHIRPS", 
                      name = "z_Linea Base")
@@ -54,7 +60,8 @@ map(sum_245, as.vector) %>%
             
   ) %>%
   ggplot(aes(name, value, fill= Escenario)) + geom_boxplot() +
-  theme_bw() + coord_flip()
+  theme_bw() + coord_flip() +
+  labs(title = "Comparativa precipitacion Anual Media vs 2050", x = "Modelos GCM",  y = "Prec. (mm)")
 
 
 
@@ -75,7 +82,7 @@ sum_585 <- files_sp585 %>% map(~app(rast(.x), fun = "mean") )
 
 
 par(mfrow = c(1, 3))
-plot(choco_temp)
+plot(caqueta_temp)
 plot(mean_245)
 plot(mean_585)
 
@@ -104,7 +111,8 @@ map(sum_245, as.vector) %>%
             
   ) %>%
   ggplot(aes(name, value, fill= Escenario)) + geom_boxplot() +
-  theme_bw() + coord_flip()
+  theme_bw() + coord_flip() + 
+  labs(title = "Comparativa Temperatura Maxima Anual Media  vs 2050", x = "Modelos GCM",  y = "Temp. (oC)")
 
 
 
@@ -124,7 +132,7 @@ sum_585 <- files_sp585 %>% map(~app(rast(.x), fun = "mean") )
 
 
 par(mfrow = c(1, 3))
-plot(app(do.call(c, era5_tmin_mensual_choco$raster_tmin)- 273.15, mean))
+plot(app(do.call(c, era5_tmin_mensual_caqueta$raster_tmin)- 273.15, mean))
 plot(mean_245)
 plot(mean_585)
 
@@ -153,7 +161,9 @@ map(sum_245, as.vector) %>%
             
   ) %>%
   ggplot(aes(name, value, fill= Escenario)) + geom_boxplot() +
-  theme_bw() + coord_flip()
+  theme_bw() + coord_flip() +
+  labs(title = "Comparativa Temperatura Minima Anual Media  vs 2050", x = "Modelos GCM",  y = "Temp. (oC)")
+
 
 
 

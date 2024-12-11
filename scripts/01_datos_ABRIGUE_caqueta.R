@@ -79,7 +79,7 @@ plet(abrigue_municipios_caqueta, "MpNombre", split=TRUE, alpha=.2) |>
 ## CHIRPS DATA ####
 # Fuente: https://chc.ucsb.edu/data/chirps
 
-chirps_files_caqueta <- list.files("data/chirps_raster/caqueta/", full.names = T)
+chirps_files_caqueta <- list.files("data/chirps/caqueta/", full.names = T)
 
 
 # Caqueta
@@ -114,7 +114,7 @@ chirps_data_caqueta_ws <- extract_from_chirps(chirps_raster_mensual_caqueta, est
 
 ## ERA5 DATA ####
 
-era5_files_caqueta <- list.files("data/era5_raster/era5/caqueta/", full.names = T)
+era5_files_caqueta <- list.files("data/era5/caqueta/", full.names = T)
 
 
 # Caqueta

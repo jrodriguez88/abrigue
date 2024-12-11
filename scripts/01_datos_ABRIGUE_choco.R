@@ -79,7 +79,7 @@ estaciones_ideam_temp_choco <- ideam_temp_choco %>%
 ## CHIRPS DATA ####
 # Fuente: https://chc.ucsb.edu/data/chirps
 
-chirps_files_choco <- list.files("data/chirps_raster/choco/", full.names = T)
+chirps_files_choco <- list.files("data/chirps/choco/", full.names = T)
 
 
 # Choco 
@@ -114,7 +114,7 @@ chirps_data_choco_ws <- extract_from_chirps(chirps_raster_mensual_choco, estacio
 
 ## ERA5 DATA ####
 
-era5_files_choco <- list.files("data/era5_raster/era5/choco/", full.names = T)
+era5_files_choco <- list.files("data/era5/choco/", full.names = T)
 
 
 # Choco 
