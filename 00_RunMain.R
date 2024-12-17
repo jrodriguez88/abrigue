@@ -17,7 +17,7 @@ library(cowplot)
 library(naniar)
 library(rsoi)
 
-source("scripts/funciones_abrigue.R")
+source("scripts/00_funciones_abrigue.R")
 
 
 

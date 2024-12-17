@@ -16,11 +16,15 @@ plet(abrigue_municipios_caqueta, "MpNombre", split=TRUE, alpha=.2) |>
 estaciones_objetivo_caqueta <- c(unique(estaciones_ideam_temp_caqueta$NombreEstacion))
 ini_date <- ymd("1981-01-01")
 end_date <- ymd("2024-07-01")
+ini_date <- ymd("1995-01-01")
+end_date <- ymd("2014-12-31")
 
 
 base_date <- seq.Date(ini_date, end_date, by = "month") %>% enframe(name = NULL, value = "date")
 baseline_ar6 <- seq.Date(ymd("1995-01-01"), ymd("2014-12-31"), by = "month") %>% 
   enframe(name = NULL, value = "date")
+
+base_date <- baseline_ar6
 
 # Subset
 ideam_prec <- ideam_prec_caqueta %>% 
